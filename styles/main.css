@@ -46,5 +46,5 @@ body {
 
 .main__item.is-dragging {
   cursor: grabbing;
-  transform: scaleX(1.01);
+  transform: scaleX(1.02);
 }
