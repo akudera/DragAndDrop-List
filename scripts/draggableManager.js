@@ -16,9 +16,13 @@ export class DraggableManager {
     offsetY: null,
   }
 
-  timerState = {
+  holderTimerState = {
     holdTimer: null,
     isHolding: false,
+  }
+
+  scrollIntervalState = {
+    interval: null,
   }
 
   constructor(RowGap) {
@@ -34,15 +38,14 @@ export class DraggableManager {
   }
 
   bindEvents() {
-    this.listElement.addEventListener('pointerdown', (event) => { if (navigator.vibrate) navigator.vibrate(50); this.onPointerDown(event) })
+    this.listElement.addEventListener('pointerdown', (event) => { this.onPointerDown(event) })
     document.addEventListener('pointermove', (event) => { this.onPointerMove(event) })
     document.addEventListener('pointerup', () => { this.onPointerUp() })
   }
 
   onPointerDown(event) {
-    this.timerState.holdTimer = setTimeout(() => {
-      if (navigator.vibrate) navigator.vibrate(100); 
-      this.timerState.isHolding = true
+    this.holderTimerState.holdTimer = setTimeout(() => {
+      this.holderTimerState.isHolding = true
       this.setDragState(event)
     }, 300)
   }
@@ -72,7 +75,7 @@ export class DraggableManager {
     const nextElement = this.state.draggableElementWrapper.nextElementSibling
     if (nextElement) {
       const nextRect = nextElement.getBoundingClientRect()
-      
+
       if (draggableRect.bottom > nextRect.top + nextRect.height / 2) {
         this.listElement.insertBefore(this.state.draggableElementWrapper, nextElement.nextElementSibling)
         this.listElements = document.querySelectorAll(this.selectors.listElement)
@@ -80,27 +83,21 @@ export class DraggableManager {
     }
 
     const viewportHeight = document.documentElement.clientHeight
-    const scrollZone = 50
+    const scrollZone = 60
     const scrollSpeed = 80
 
+    clearInterval(this.scrollIntervalState.interval)
+
     if (event.clientY < scrollZone) {
-      scrollBy({
-        left: 0, 
-        top: -scrollSpeed,
-        behavior: 'smooth',
-      })
+      this.scrollIntervalState.interval = setInterval(() => { this.autoScroll(-scrollSpeed) }, 100)
     } else if (event.clientY > viewportHeight - scrollZone) {
-      scrollBy({
-        left: 0, 
-        top: scrollSpeed,
-        behavior: 'smooth',
-      })
+      this.scrollIntervalState.interval = setInterval(() => { this.autoScroll(scrollSpeed) }, 100)
     }
   }
 
   onPointerUp() {
-    clearTimeout(this.timerState.holdTimer)
-    this.timerState.isHolding = false
+    clearTimeout(this.holderTimerState.holdTimer)
+    this.holderTimerState.isHolding = false
     if (!this.state.draggableElement) return
 
     this.resetState()
@@ -113,8 +110,16 @@ export class DraggableManager {
     this.state = { ...this.initialState }
   }
 
+  autoScroll(scrollSpeed) {
+    scrollBy({
+      left: 0,
+      top: scrollSpeed,
+      behavior: 'smooth',
+    })
+  }
+
   setDragState(event) {
-    if (this.timerState.isHolding) {
+    if (this.holderTimerState.isHolding) {
       const { target, clientY } = event
       const { top } = target.getBoundingClientRect()
 
