@@ -48,6 +48,8 @@ export class DraggableManager {
   }
 
   onPointerMove(event) {
+    clearTimeout(this.timerState.holdTimer)
+    this.timerState.isHolding = false
     if (!this.state.draggableElement) return
 
     const y = event.pageY - this.listStartY - this.state.offsetY
