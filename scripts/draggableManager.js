@@ -48,12 +48,10 @@ export class DraggableManager {
   }
 
   onPointerMove(event) {
-    clearTimeout(this.timerState.holdTimer)
-    this.timerState.isHolding = false
     if (!this.state.draggableElement) return
 
-    const y = event.clientY - this.listStartY - this.state.offsetY
-    if (event.clientY - this.state.offsetY > this.listStartY && y < this.listMaxY) {
+    const y = event.pageY - this.listStartY - this.state.offsetY
+    if (event.pageY - this.state.offsetY > this.listStartY && y < this.listMaxY) {
       this.state.draggableElement.style.top = `${y}px`
     }
 
@@ -93,14 +91,14 @@ export class DraggableManager {
 
   setDragState(event) {
     if (this.timerState.isHolding) {
-      const { target, clientY } = event
+      const { target, pageY } = event
       const { top } = target.getBoundingClientRect()
 
       if (!target.matches(this.selectors.listElementInner)) return
 
       this.state.draggableElementWrapper = target.parentElement
       this.state.draggableElement = target
-      this.state.offsetY = clientY - top
+      this.state.offsetY = pageY - top
       this.state.draggableElement.style.zIndex = 100
       this.state.currentPosition = target.style.top
       this.state.draggableElement.classList.add(this.stateClasses.isDragging)
