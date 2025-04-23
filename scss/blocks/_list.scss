@@ -1,0 +1,35 @@
+.main {
+  padding: 20px 40px;
+
+  &__list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+  }
+
+  &__item {
+    width: 100%;
+  
+    &-inner {
+      background-color: var(--color-light);
+      box-shadow: var(--box-shadow-light);
+      border-radius: 8px;
+      min-width: 100%;
+      padding: 10px 40px;
+      word-break: break-all;
+      user-select: none;
+      touch-action: none;
+      transition: transform var(--transition-duration);
+      
+      &.is-dragging {
+        cursor: grabbing;
+        position: absolute;
+      }
+    }
+
+    &-inner.is-dragging {
+      transform: scaleX(1.02);
+    }
+  }
+}

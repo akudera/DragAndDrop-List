@@ -1,3 +1,3 @@
 import { DraggableManager } from "./draggableManager.js";
 
-new DraggableManager()
+new DraggableManager(12)
