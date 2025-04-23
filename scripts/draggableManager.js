@@ -34,45 +34,67 @@ export class DraggableManager {
   }
 
   bindEvents() {
-    this.listElement.addEventListener('pointerdown', (event) => { this.onPointerDown(event) })
+    this.listElement.addEventListener('pointerdown', (event) => { if (navigator.vibrate) navigator.vibrate(50); this.onPointerDown(event) })
     document.addEventListener('pointermove', (event) => { this.onPointerMove(event) })
     document.addEventListener('pointerup', () => { this.onPointerUp() })
   }
 
   onPointerDown(event) {
     this.timerState.holdTimer = setTimeout(() => {
+      if (navigator.vibrate) navigator.vibrate(100); 
       this.timerState.isHolding = true
       this.setDragState(event)
-      navigator.vibrate(200)
     }, 300)
   }
 
   onPointerMove(event) {
-    clearTimeout(this.timerState.holdTimer)
-    this.timerState.isHolding = false
     if (!this.state.draggableElement) return
 
-    const y = event.pageY - this.listStartY - this.state.offsetY
+    const listCurrentStartY = this.listElement.getBoundingClientRect().top
+    const y = event.clientY - listCurrentStartY - this.state.offsetY
+
     if (event.pageY - this.state.offsetY > this.listStartY && y < this.listMaxY) {
       this.state.draggableElement.style.top = `${y}px`
     }
 
+    const draggableRect = this.state.draggableElement.getBoundingClientRect()
+
     const previousElement = this.state.draggableElementWrapper.previousElementSibling
     if (previousElement) {
-      const previousElementStartY = previousElement.getBoundingClientRect().top - this.listStartY
-      if (y < previousElementStartY + previousElement.getBoundingClientRect().height && previousElementStartY < y) {
+      const previousRect = previousElement.getBoundingClientRect()
+
+      if (draggableRect.top < previousRect.top + previousRect.height / 2) {
         this.listElement.insertBefore(this.state.draggableElementWrapper, previousElement)
         this.listElements = document.querySelectorAll(this.selectors.listElement)
       }
     }
-    const draggableElementHeight = this.state.draggableElement.getBoundingClientRect().height
+
     const nextElement = this.state.draggableElementWrapper.nextElementSibling
     if (nextElement) {
-      const nextElementStartY = nextElement.getBoundingClientRect().top - this.listStartY
-      if (y + draggableElementHeight < nextElementStartY + nextElement.getBoundingClientRect().height && nextElementStartY < y + draggableElementHeight) {
+      const nextRect = nextElement.getBoundingClientRect()
+      
+      if (draggableRect.bottom > nextRect.top + nextRect.height / 2) {
         this.listElement.insertBefore(this.state.draggableElementWrapper, nextElement.nextElementSibling)
         this.listElements = document.querySelectorAll(this.selectors.listElement)
       }
+    }
+
+    const viewportHeight = document.documentElement.clientHeight
+    const scrollZone = 50
+    const scrollSpeed = 80
+
+    if (event.clientY < scrollZone) {
+      scrollBy({
+        left: 0, 
+        top: -scrollSpeed,
+        behavior: 'smooth',
+      })
+    } else if (event.clientY > viewportHeight - scrollZone) {
+      scrollBy({
+        left: 0, 
+        top: scrollSpeed,
+        behavior: 'smooth',
+      })
     }
   }
 
@@ -88,23 +110,23 @@ export class DraggableManager {
     this.state.draggableElement.style.zIndex = '0'
     this.state.draggableElement.classList.remove(this.stateClasses.isDragging)
 
-    this.state = { ...this.initialState }    
+    this.state = { ...this.initialState }
   }
 
   setDragState(event) {
     if (this.timerState.isHolding) {
-      const { target, pageY } = event
+      const { target, clientY } = event
       const { top } = target.getBoundingClientRect()
 
       if (!target.matches(this.selectors.listElementInner)) return
 
       this.state.draggableElementWrapper = target.parentElement
       this.state.draggableElement = target
-      this.state.offsetY = pageY - top
+      this.state.offsetY = clientY - top
       this.state.draggableElement.style.zIndex = 100
       this.state.currentPosition = target.style.top
       this.state.draggableElement.classList.add(this.stateClasses.isDragging)
-      
+
       this.state.draggableElementWrapper.style.height = `${this.state.draggableElement.getBoundingClientRect().height}px`
       this.state.draggableElement.style.top = `${this.getNewTopCoordinate(this.state.draggableElementWrapper)}px`
     }
