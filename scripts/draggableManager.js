@@ -89,15 +89,17 @@ export class DraggableManager {
     clearInterval(this.scrollIntervalState.interval)
 
     if (event.clientY < scrollZone) {
-      this.scrollIntervalState.interval = setInterval(() => { this.autoScroll(-scrollSpeed) }, 100)
+      this.scrollIntervalState.interval = setInterval(() => { this.autoScroll(-scrollSpeed) }, 80)
     } else if (event.clientY > viewportHeight - scrollZone) {
-      this.scrollIntervalState.interval = setInterval(() => { this.autoScroll(scrollSpeed) }, 100)
+      this.scrollIntervalState.interval = setInterval(() => { this.autoScroll(scrollSpeed) }, 80)
     }
   }
 
   onPointerUp() {
     clearTimeout(this.holderTimerState.holdTimer)
     this.holderTimerState.isHolding = false
+
+    clearInterval(this.scrollIntervalState.interval)
     if (!this.state.draggableElement) return
 
     this.resetState()
