@@ -84,14 +84,14 @@ export class DraggableManager {
 
     const viewportHeight = document.documentElement.clientHeight
     const scrollZone = 60
-    const scrollSpeed = 80
+    const scrollSpeed = 180
 
     clearInterval(this.scrollIntervalState.interval)
 
     if (event.clientY < scrollZone) {
-      this.scrollIntervalState.interval = setInterval(() => { this.autoScroll(-scrollSpeed) }, 80)
+      this.scrollIntervalState.interval = setInterval(() => { this.autoScroll(-scrollSpeed) }, 10)
     } else if (event.clientY > viewportHeight - scrollZone) {
-      this.scrollIntervalState.interval = setInterval(() => { this.autoScroll(scrollSpeed) }, 80)
+      this.scrollIntervalState.interval = setInterval(() => { this.autoScroll(scrollSpeed) }, 10)
     }
   }
 
@@ -106,6 +106,7 @@ export class DraggableManager {
   }
 
   resetState() {
+    this.state.draggableElementWrapper.style.height = ''
     this.state.draggableElement.style.zIndex = '0'
     this.state.draggableElement.classList.remove(this.stateClasses.isDragging)
 
