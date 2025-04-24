@@ -10,11 +10,16 @@
 
   &__item {
     width: 100%;
+    border-radius: var(--border-radius);
+
+    &:has(&-inner.is-dragging) {
+      background-color: var(--color-light-gray);
+    }
   
     &-inner {
       background-color: var(--color-light);
       box-shadow: var(--box-shadow-light);
-      border-radius: 8px;
+      border-radius: var(--border-radius);
       min-width: 100%;
       padding: 10px 40px;
       word-break: break-all;
@@ -24,7 +29,6 @@
       
       &.is-dragging {
         cursor: grabbing;
-        position: absolute;
       }
     }
 

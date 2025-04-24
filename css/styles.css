@@ -182,7 +182,9 @@ svg * {
 }
 :root {
   --color-light: #fff;
+  --color-light-gray: #e0e0e0;
   --box-shadow-light: 0 0 5px 2px #cfcfcf;
+  --border-radius: 8px;
   --transition-duration: 0.2s;
 }
 
@@ -210,11 +212,15 @@ svg * {
 }
 .main__item {
   width: 100%;
+  border-radius: var(--border-radius);
+}
+.main__item:has(.main__item-inner.is-dragging) {
+  background-color: var(--color-light-gray);
 }
 .main__item-inner {
   background-color: var(--color-light);
   box-shadow: var(--box-shadow-light);
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   min-width: 100%;
   padding: 10px 40px;
   word-break: break-all;
@@ -226,7 +232,6 @@ svg * {
 }
 .main__item-inner.is-dragging {
   cursor: grabbing;
-  position: absolute;
 }
 .main__item-inner.is-dragging {
   transform: scaleX(1.02);
